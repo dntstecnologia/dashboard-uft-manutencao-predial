@@ -1,1 +1,350 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UFT — Dashboard de Manutenção Predial</title>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --azul:#004A80;--azul2:#0068B4;--azulL:#E8F1F8;
+  --verde:#008577;--verdeL:#00A896;--verdeBg:#E6F5F3;
+  --amarelo:#FDB913;--amareloL:#FFD466;--amareloBg:#FFF8E6;
+  --cinza:#666;--cinzaL:#999;--cinzaBg:#F3F5F8;
+  --branco:#FFF;--preto:#1A1A2E;--vermelho:#D64045;
+  --sh1:0 1px 2px rgba(0,40,80,.05);--sh2:0 2px 6px rgba(0,40,80,.07);
+  --sh3:0 4px 16px rgba(0,40,80,.09);--sh4:0 8px 30px rgba(0,40,80,.12);
+  --r:12px;--rs:8px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Open Sans',sans-serif;background:var(--cinzaBg);color:var(--preto);min-height:100vh}
+.ld{position:fixed;inset:0;background:var(--azul);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .5s}
+.ld.h{opacity:0;pointer-events:none}
+.sp{width:48px;height:48px;border:4px solid rgba(255,255,255,.15);border-top-color:var(--amarelo);border-radius:50%;animation:spin .8s linear infinite}
+.lt{color:rgba(255,255,255,.7);font-size:13px;margin-top:16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.hd{background:linear-gradient(135deg,var(--azul),#002E52);position:sticky;top:0;z-index:100;box-shadow:var(--sh4)}
+.hs{height:4px;background:linear-gradient(90deg,var(--verde) 0%,var(--verde) 33.3%,var(--amarelo) 33.3%,var(--amarelo) 66.6%,var(--azul2) 66.6%)}
+.hi{max-width:1440px;margin:0 auto;padding:14px 32px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.hl{display:flex;align-items:center;gap:14px}
+.logo{width:44px;height:32px;background:rgba(255,255,255,.12);border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:var(--branco);letter-spacing:1px}
+.ht h1{font-size:14px;font-weight:700;color:var(--branco)}
+.ht p{font-size:11px;color:rgba(255,255,255,.55);margin-top:1px}
+.hr{display:flex;align-items:center;gap:12px}
+.badge{background:rgba(253,185,19,.15);border:1px solid rgba(253,185,19,.3);border-radius:20px;padding:5px 14px;font-size:10px;font-weight:700;color:var(--amarelo);letter-spacing:.8px;text-transform:uppercase}
+.st{display:flex;align-items:center;gap:6px;font-size:10px;color:rgba(255,255,255,.5)}
+.sd{width:7px;height:7px;border-radius:50%;background:#00C853;animation:pulse 2s infinite}.sd.err{background:var(--vermelho)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.nb{background:var(--branco);border-bottom:1px solid #E2E8F0;box-shadow:var(--sh1)}
+.ni{max-width:1440px;margin:0 auto;padding:0 32px;display:flex;align-items:center;flex-wrap:wrap}
+.nt{padding:12px 20px;border:none;background:none;cursor:pointer;font-family:'Open Sans',sans-serif;font-size:12px;font-weight:600;color:var(--cinza);border-bottom:3px solid transparent;transition:all .2s;text-transform:uppercase;letter-spacing:.5px}
+.nt:hover{color:var(--azul)}.nt.a{color:var(--azul);border-bottom-color:var(--amarelo)}
+.ns{flex:1}
+.nf{display:flex;align-items:center;gap:6px;padding:8px 0}
+.nf label{font-size:10px;font-weight:700;color:var(--cinzaL);text-transform:uppercase;letter-spacing:.5px}
+.pg{display:flex;gap:3px;background:#EEF1F5;border-radius:6px;padding:2px}
+.pl{padding:5px 12px;border:none;border-radius:5px;background:transparent;font-family:'Open Sans',sans-serif;font-size:11px;font-weight:600;color:var(--cinza);cursor:pointer;transition:all .2s}
+.pl.a{background:var(--azul);color:var(--branco);box-shadow:var(--sh2)}
+.mn{max-width:1440px;margin:0 auto;padding:20px 32px 60px}
+.sg{display:grid;grid-template-columns:280px repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:20px}
+.cd{background:var(--branco);border-radius:var(--r);padding:18px 20px;box-shadow:var(--sh2);transition:all .25s;position:relative;overflow:hidden;cursor:pointer;border:2px solid transparent}
+.cd:hover{box-shadow:var(--sh3);transform:translateY(-1px)}.cd.sel{border-color:var(--amarelo)}
+.ca{position:absolute;top:0;left:0;width:100%;height:3px}
+.cd .lb{font-size:10px;font-weight:700;color:var(--cinzaL);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px}
+.cd .vl{font-size:20px;font-weight:800;color:var(--azul);line-height:1.1}
+.cd .sb{font-size:11px;color:var(--cinzaL);margin-top:4px}
+.ct{background:linear-gradient(135deg,#F0FAF8,var(--branco))}.ct .vl{color:var(--verde);font-size:24px}
+.pm{margin-top:8px}.pt{width:100%;height:5px;background:#EEF1F5;border-radius:3px;overflow:hidden}
+.pf{height:100%;border-radius:3px;transition:width .6s}.pp{font-size:9px;font-weight:700;color:var(--cinzaL);margin-top:3px;display:flex;justify-content:space-between}
+.cg{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.cb{background:var(--branco);border-radius:var(--r);padding:22px 24px;box-shadow:var(--sh2)}
+.cb.f{grid-column:1/-1}
+.ch2{display:flex;align-items:center;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+.cdt{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.ctl{font-size:12px;font-weight:700;color:var(--azul);text-transform:uppercase;letter-spacing:.4px}
+.cst{font-size:11px;color:var(--cinzaL);margin-left:auto}
+/* Segment filter pills inside charts */
+.seg-pills{display:flex;gap:3px;background:#EEF1F5;border-radius:5px;padding:2px;margin-left:12px}
+.seg-pill{padding:3px 10px;border:none;border-radius:4px;background:transparent;font-family:'Open Sans',sans-serif;font-size:10px;font-weight:600;color:var(--cinza);cursor:pointer;transition:all .15s}
+.seg-pill.a{color:var(--branco);box-shadow:var(--sh1)}
+.seg-pill[data-s="postos"].a{background:var(--azul)}
+.seg-pill[data-s="material"].a{background:var(--amarelo);color:var(--preto)}
+.seg-pill[data-s="total"].a{background:var(--verde)}
+/* Bars */
+.bs{display:flex;align-items:flex-end;gap:14px;height:240px;border-bottom:2px solid #EEF1F5;padding-bottom:2px}
+.bc{flex:1;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end}
+.bv{font-size:10px;font-weight:700;color:var(--azul);margin-bottom:4px;opacity:0;transition:opacity .2s;text-align:center;white-space:nowrap}
+.bc:hover .bv{opacity:1}
+.br{width:100%;max-width:64px;border-radius:6px 6px 0 0;min-height:3px;transition:all .4s cubic-bezier(.34,1.56,.64,1)}
+.bc:hover .br{filter:brightness(1.12)}
+.bn{font-size:9px;font-weight:700;color:var(--cinza);margin-top:8px;text-transform:uppercase;text-align:center}
+/* Donut */
+.dw{display:flex;align-items:center;gap:28px;flex-wrap:wrap;justify-content:center}
+.dsb{position:relative;width:200px;height:200px;flex-shrink:0}
+.dc{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+.dc .da{font-size:17px;font-weight:800;color:var(--azul)}.dc .dl{font-size:9px;color:var(--cinzaL);text-transform:uppercase;letter-spacing:.5px}
+.lg{display:flex;flex-direction:column;gap:8px}
+.li{display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;cursor:pointer;transition:background .2s}
+.li:hover{background:var(--azulL)}
+.ld2{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.ln{font-size:11px;font-weight:600;color:var(--preto);min-width:90px}
+.lv{font-size:11px;font-weight:700;color:var(--azul)}.lp{font-size:10px;color:var(--cinzaL);margin-left:2px}
+/* HStack */
+.hsc{display:flex;flex-direction:column;gap:12px}
+.hsr{display:flex;align-items:center;gap:10px}
+.hsl{width:100px;font-size:10px;font-weight:700;color:var(--cinza);text-align:right;text-transform:uppercase;flex-shrink:0}
+.hst2{flex:1;height:28px;background:#EEF1F5;border-radius:5px;overflow:hidden;display:flex}
+.hsg{height:100%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:white;text-shadow:0 1px 2px rgba(0,0,0,.15);min-width:2px;cursor:pointer;transition:filter .2s}
+.hsg:hover{filter:brightness(1.15)}
+.htt{width:110px;font-size:11px;font-weight:700;color:var(--azul);text-align:right;flex-shrink:0}
+/* Timeline */
+.tlr{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.tll{width:100px;font-size:10px;font-weight:700;text-align:right;text-transform:uppercase;flex-shrink:0}
+.tlbw{flex:1;display:flex;gap:3px;align-items:flex-end;height:60px}
+.tlb{flex:1;border-radius:3px 3px 0 0;min-height:2px;cursor:pointer;transition:all .2s;position:relative}
+.tlb:hover{filter:brightness(1.15)}
+.tlbt{position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:8px;font-weight:700;color:var(--azul);white-space:nowrap;opacity:0;transition:opacity .2s}
+.tlb:hover .tlbt{opacity:1}
+.tlm{display:flex;gap:3px;padding-left:110px;margin-bottom:6px}
+.tlm span{flex:1;text-align:center;font-size:8px;font-weight:700;color:var(--cinzaL);text-transform:uppercase}
+/* Gauge */
+.gg{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.gc{background:var(--branco);border-radius:var(--rs);padding:16px;text-align:center;box-shadow:var(--sh1)}
+.gc .gn{font-size:10px;font-weight:700;color:var(--cinza);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+.grb{position:relative;width:100px;height:100px;margin:0 auto}
+.gcn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:18px;font-weight:800}
+.gc .gd{font-size:10px;color:var(--cinzaL);margin-top:8px;line-height:1.6}.gc .gd strong{color:var(--azul)}
+/* Saldo Card */
+.saldo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.saldo-card{background:var(--branco);border-radius:var(--rs);padding:18px;box-shadow:var(--sh1);border-top:3px solid var(--verde)}
+.saldo-card .sc-name{font-size:10px;font-weight:700;color:var(--cinza);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+.saldo-card .sc-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;font-size:11px}
+.saldo-card .sc-label{color:var(--cinzaL)}
+.saldo-card .sc-val{font-weight:700;color:var(--azul)}
+.saldo-card .sc-divider{border-top:1px dashed #E2E8F0;margin:6px 0}
+.saldo-card .sc-saldo{font-size:16px;font-weight:800}
+.saldo-card .sc-bar{width:100%;height:8px;background:#EEF1F5;border-radius:4px;overflow:hidden;margin-top:8px}
+.saldo-card .sc-bar-fill{height:100%;border-radius:4px;transition:width .5s}
+.saldo-card .sc-months{font-size:9px;color:var(--cinzaL);margin-top:6px;text-align:center}
+/* Table */
+.tw{overflow-x:auto}
+table.dt{width:100%;border-collapse:collapse;font-size:11px}
+table.dt th{background:var(--azul);color:var(--branco);padding:10px 12px;text-align:center;font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.3px;white-space:nowrap;border-right:1px solid rgba(255,255,255,.1)}
+table.dt th:first-child{text-align:left;border-radius:8px 0 0 0}table.dt th:last-child{border-radius:0 8px 0 0;border-right:none}
+table.dt th.thc{background:var(--verde)}
+table.dt td{padding:9px 12px;border-bottom:1px solid #EEF1F5;text-align:center}
+table.dt td:first-child{text-align:left;font-weight:600;color:var(--azul);white-space:nowrap}
+table.dt tr:hover td{background:var(--azulL)}
+table.dt .z{color:#CCC}table.dt .q{color:var(--cinza);font-size:10px}table.dt .v{font-weight:600}
+table.dt tr.trt td{font-weight:700;background:#F0F7FC;color:var(--azul);border-top:2px solid var(--azul)}
+table.dt tr.trm td{font-style:italic;color:var(--cinza);background:#FAFAFA}
+.tt{position:fixed;background:var(--azul);color:white;padding:8px 14px;border-radius:6px;font-size:11px;font-weight:600;pointer-events:none;z-index:999;display:none;box-shadow:var(--sh3);white-space:pre-line;max-width:260px}
+.tt::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--azul)}
+.eb{background:#FFF0F0;border:1px solid #FFCCCC;border-radius:var(--rs);padding:16px 20px;color:var(--vermelho);font-size:13px;margin-bottom:20px;display:none}.eb.s{display:block}.eb strong{font-weight:700}
+@media(max-width:1024px){.cg{grid-template-columns:1fr}.sg{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}}
+@media(max-width:768px){.hi,.ni,.mn{padding-left:16px;padding-right:16px}.badge{display:none}.cd .vl{font-size:16px}.dw{flex-direction:column}.hsl,.tll{width:60px;font-size:8px}.seg-pills{margin-left:0;margin-top:6px}}
+@keyframes fu{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}.an{animation:fu .35s ease forwards}
+</style>
+</head>
+<body>
+<div class="ld" id="loader"><div class="sp"></div><div class="lt">Carregando dados do Google Sheets...</div></div>
+<div class="tt" id="tt"></div>
+<header class="hd"><div class="hs"></div><div class="hi">
+  <div class="hl"><div class="logo">UFT</div><div class="ht"><h1>Dashboard de Manutenção Predial</h1><p>Prefeitura Universitária — Coordenação de Manutenção</p></div></div>
+  <div class="hr"><div class="st"><div class="sd" id="statusDot"></div><span id="statusText">Conectando...</span></div><div class="badge">Contrato de Manutenção</div></div>
+</div></header>
+<nav class="nb"><div class="ni">
+  <button class="nt a" data-tab="plan" onclick="setTab('plan')">Planejamento</button>
+  <button class="nt" data-tab="exec" onclick="setTab('exec')">Execução</button>
+  <button class="nt" data-tab="comp" onclick="setTab('comp')">Planejado vs Executado</button>
+  <button class="nt" data-tab="saldo" onclick="setTab('saldo')">Saldo &amp; Previsão</button>
+  <div class="ns"></div>
+  <div class="nf" id="pf"><label>Período:</label><div class="pg"><button class="pl" onclick="setView('mensal')">Mensal</button><button class="pl a" onclick="setView('anual')">Anual</button></div></div>
+</div></nav>
+<main class="mn">
+  <div class="eb" id="err"><strong>Erro ao carregar dados:</strong> <span id="errM"></span><br><small>Usando dados de backup.</small></div>
+  <div id="app"></div>
+</main>
+<script>
+const PROXY='https://script.google.com/macros/s/AKfycbxA1BTr1zpe8SzjOhVRKzoEDtcFWCHHXNnyTZo7I8ItdWunT1GDeHW5kx8O6GHUQcPK/exec';
+const CN=['Arraias','Gurupi','Miracema','Palmas','Porto Nacional','Reitoria'];
+const CU=CN.map(c=>c.toUpperCase());
+const KK=['#004A80','#008577','#FDB913','#0068B4','#00A896','#666666'];
+const MN=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+const MS=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+const fmt=v=>v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const fK=v=>{if(Math.abs(v)>=1e6)return'R$ '+(v/1e6).toFixed(2).replace('.',',')+' Mi';if(Math.abs(v)>=1e3)return'R$ '+(v/1e3).toFixed(1).replace('.',',')+' mil';return fmt(v);};
+const pc=(v,t)=>t?((v/t)*100).toFixed(1)+'%':'0%';
+const nn=v=>typeof v==='number'?v:(typeof v==='string'?parseFloat(v.replace(/R\$\s?/g,'').replace(/\./g,'').replace(',','.'))||0:0);
+
+// Format month: "janeiro/2026" or "2026-01-01T..." → "Jan/2026"
+function fmtMes(raw){
+  const s=String(raw);
+  // ISO date format
+  if(s.match(/^\d{4}-\d{2}/)){const d=new Date(s);if(!isNaN(d))return MS[d.getMonth()]+'/'+d.getFullYear();}
+  // "janeiro/2026" format
+  const parts=s.split('/');if(parts.length===2){const mi=MN.indexOf(parts[0].toLowerCase().trim());if(mi>=0)return MS[mi]+'/'+parts[1].trim();}
+  return s;
+}
+function mesSort(a,b){
+  function toNum(s){const st=String(s);if(st.match(/^\d{4}-\d{2}/)){return new Date(st).getTime();}const p=st.split('/');if(p.length===2){const mi=MN.indexOf(p[0].toLowerCase().trim());return(parseInt(p[1])||0)*12+mi;}return 0;}
+  return toNum(a)-toNum(b);
+}
+
+let S={tab:'plan',view:'anual',sel:null,seg:'total',plan:null,exec:null,live:false};
+
+// Parse
+function parsePlan(R){if(!R||R.length<16)return null;const postos=[];for(let r=3;r<=11;r++){if(!R[r])continue;const nm=String(R[r][1]||'').trim();if(!nm)continue;const vl=nn(R[r][2]),qt=[];for(let c=0;c<6;c++)qt.push(parseInt(R[r][3+c*2])||0);if(vl>0)postos.push({nome:nm,valor:vl,qtd:qt});}const tp=[],tm=[],tt=[],ta=[];for(let c=0;c<6;c++){const vc=4+c*2;tp.push(nn(R[12]?.[vc]));tm.push(nn(R[13]?.[vc]));tt.push(nn(R[14]?.[vc]));ta.push(nn(R[15]?.[vc]));}return{postos,tpM:tp,matM:tm,totM:tt,totA:ta};}
+function parseExec(R){if(!R||R.length<3)return null;const d=[];for(let r=2;r<R.length;r++){if(!R[r]||!R[r][0])continue;const campus=String(R[r][0]).trim(),mes=String(R[r][1]).trim(),mo=nn(R[r][2]),ma=nn(R[r][3]),to=nn(R[r][4]);if(campus&&mes)d.push({campus,mes,maoObra:mo,material:ma,total:to});}return d.length?d:null;}
+
+async function load(){
+  try{const r=await fetch(PROXY);if(!r.ok)throw new Error('HTTP '+r.status);const j=await r.json();
+    if(j.planejamento){S.plan=parsePlan(j.planejamento);S.live=true;}
+    if(j.execucao)S.exec=parseExec(j.execucao);
+    if(!S.plan)throw new Error('Dados não encontrados');
+    document.getElementById('statusDot').classList.remove('err');document.getElementById('statusText').textContent='Dados ao vivo';
+  }catch(e){document.getElementById('err').classList.add('s');document.getElementById('errM').textContent=e.message;document.getElementById('statusDot').classList.add('err');document.getElementById('statusText').textContent='Dados offline';fallback();}
+  document.getElementById('loader').classList.add('h');render();
+}
+
+function fallback(){
+  S.plan={postos:[{nome:'Encarregado Geral – 44h',valor:8748.98,qtd:[0,1,0,1,0,1]},{nome:'Auxiliar de Escritório - 44h',valor:6027.27,qtd:[0,0,0,1,0,2]},{nome:'Oficial de Manutenção Geral - 44h',valor:7357.14,qtd:[1,2,0,2,0,1]},{nome:'Oficial de Manutenção Eletricista - 44h',valor:10025.35,qtd:[1,1,1,2,1,3]},{nome:'Mecânico de Refrig. e Ar Cond. - 44h',valor:9965.32,qtd:[0,1,1,3,1,1]},{nome:'Auxiliar de Manutenção Predial - 44h',valor:6639.56,qtd:[1,0,1,2,1,2]},{nome:'Jardineiro (Arraias) - 44h',valor:5962.99,qtd:[1,0,0,0,0,0]}],tpM:[29985.04,43453.93,26630.23,92716.31,26630.23,81481.15],matM:[14992.52,21726.965,13315.115,46358.155,13315.115,40740.575],totM:[44977.56,65180.895,39945.345,139074.465,39945.345,122221.725],totA:[539730.72,782170.74,479344.14,1668893.58,479344.14,1466660.70]};
+  S.exec=[{campus:'Arraias',mes:'janeiro/2026',maoObra:29985.04,material:3861.82,total:33846.86},{campus:'Gurupi',mes:'janeiro/2026',maoObra:43467.90,material:40355.71,total:83823.61},{campus:'Miracema',mes:'janeiro/2026',maoObra:26630.22,material:2085.09,total:28715.31},{campus:'Palmas',mes:'janeiro/2026',maoObra:92364.64,material:4813.71,total:97178.35},{campus:'Porto Nacional',mes:'janeiro/2026',maoObra:26630.23,material:14550.38,total:41180.61},{campus:'Reitoria',mes:'janeiro/2026',maoObra:96822.11,material:1292.31,total:98114.42},{campus:'Arraias',mes:'fevereiro/2026',maoObra:29985.04,material:5736.57,total:35721.61},{campus:'Gurupi',mes:'fevereiro/2026',maoObra:43467.90,material:19638.28,total:63106.18},{campus:'Miracema',mes:'fevereiro/2026',maoObra:26630.22,material:4672.37,total:31302.59},{campus:'Palmas',mes:'fevereiro/2026',maoObra:92364.64,material:1298.42,total:93663.06},{campus:'Porto Nacional',mes:'fevereiro/2026',maoObra:26630.23,material:5463.01,total:32093.24},{campus:'Reitoria',mes:'fevereiro/2026',maoObra:96822.11,material:14126.46,total:110948.57},{campus:'Arraias',mes:'março/2026',maoObra:29985.04,material:3181.59,total:33166.63},{campus:'Gurupi',mes:'março/2026',maoObra:43467.90,material:8524.30,total:51992.20},{campus:'Miracema',mes:'março/2026',maoObra:26630.22,material:1065.28,total:27695.50},{campus:'Palmas',mes:'março/2026',maoObra:92364.64,material:28614.00,total:120978.64},{campus:'Porto Nacional',mes:'março/2026',maoObra:26630.23,material:3492.00,total:30122.23},{campus:'Reitoria',mes:'março/2026',maoObra:71006.29,material:15615.20,total:86621.49}];
+}
+
+// Interaction
+function setTab(t){S.tab=t;document.querySelectorAll('.nt').forEach(e=>e.classList.toggle('a',e.dataset.tab===t));document.getElementById('pf').style.display=t==='plan'?'flex':'none';render();}
+function setView(v){S.view=v;document.querySelectorAll('.pl').forEach(e=>e.classList.toggle('a',e.textContent.toLowerCase()===v));render();}
+function sel(i){S.sel=S.sel===i?null:i;render();}
+function setSeg(s){S.seg=s;render();}
+function sT(e,t){const el=document.getElementById('tt');el.textContent=t;el.style.display='block';el.style.left=Math.min(e.clientX-40,window.innerWidth-200)+'px';el.style.top=(e.clientY-el.offsetHeight-14)+'px';}
+function hT(){document.getElementById('tt').style.display='none';}
+
+// Exec helpers
+function eBy(ci){return(S.exec||[]).filter(r=>r.campus.toUpperCase()===CU[ci]);}
+function eMo(){if(!S.exec)return[];const ms=[...new Set(S.exec.map(r=>r.mes))];ms.sort(mesSort);return ms;}
+function eMD(){return eMo().filter(m=>(S.exec||[]).some(r=>r.mes===m&&r.total>0));}
+function eVal(r){return S.seg==='postos'?r.maoObra:S.seg==='material'?r.material:r.total;}
+function eTot(ci){return eBy(ci).reduce((a,r)=>a+eVal(r),0);}
+function ePostTot(ci){return eBy(ci).reduce((a,r)=>a+r.maoObra,0);}
+function eMatTot(ci){return eBy(ci).reduce((a,r)=>a+r.material,0);}
+function segColor(){return S.seg==='postos'?'var(--azul)':S.seg==='material'?'var(--amarelo)':'var(--verde)';}
+function segLabel(){return S.seg==='postos'?'Mão de Obra':S.seg==='material'?'Material':'Total (Postos+Material)';}
+function planVal(ci){const P=S.plan,m=S.view==='anual'?12:1;if(S.seg==='postos')return P.tpM[ci]*m;if(S.seg==='material')return P.matM[ci]*m;return P.totM[ci]*m;}
+
+// Segment pills HTML
+function segPills(){return`<div class="seg-pills"><button class="seg-pill${S.seg==='total'?' a':''}" data-s="total" onclick="setSeg('total')">Total</button><button class="seg-pill${S.seg==='postos'?' a':''}" data-s="postos" onclick="setSeg('postos')">Postos</button><button class="seg-pill${S.seg==='material'?' a':''}" data-s="material" onclick="setSeg('material')">Material</button></div>`;}
+
+// ============================================================
+// RENDER
+// ============================================================
+function render(){const a=document.getElementById('app');if(S.tab==='plan')a.innerHTML=rP();else if(S.tab==='exec')a.innerHTML=rE();else if(S.tab==='comp')a.innerHTML=rC();else a.innerHTML=rS();}
+
+function rP(){
+  if(!S.plan)return'';const P=S.plan,m=S.view==='anual'?12:1;
+  const vs=CN.map((_,i)=>planVal(i)),tot=vs.reduce((a,b)=>a+b,0);
+  const f=S.sel!==null?[S.sel]:CN.map((_,i)=>i);
+  const et=CN.map((_,i)=>eTot(i)),eg=et.reduce((a,b)=>a+b,0);
+  return`<div class="sg an">
+    <div class="cd ct" onclick="sel(null)"><div class="ca" style="background:var(--verde)"></div><div class="lb" style="color:var(--verde)">Total Geral — ${segLabel()}</div><div class="vl" style="color:var(--verde)">${fmt(tot)}</div><div class="sb">${S.view==='anual'?'Estimativa anual':'Estimativa mensal'} · 6 campi</div>${S.exec?`<div class="pm"><div class="pt"><div class="pf" style="width:${Math.min(100,eg/tot*100)}%;background:var(--verde)"></div></div><div class="pp"><span>Executado: ${pc(eg,tot)}</span><span>${fK(eg)}</span></div></div>`:''}</div>
+    ${CN.map((c,i)=>{const pV=vs[i],ep=S.view==='anual'&&pV>0?et[i]/pV*100:0;return`<div class="cd${S.sel===i?' sel':''}" onclick="sel(${i})"><div class="ca" style="background:${KK[i]}"></div><div class="lb">${c}</div><div class="vl">${fK(pV)}</div><div class="sb">${pc(pV,tot)} do total</div>${S.exec&&S.view==='anual'?`<div class="pm"><div class="pt"><div class="pf" style="width:${Math.min(100,ep)}%;background:${KK[i]}"></div></div><div class="pp"><span>${ep.toFixed(1)}% exec.</span><span>${fK(et[i])}</span></div></div>`:''}</div>`;}).join('')}
+  </div><div class="cg">
+    <div class="cb an"><div class="ch2"><div class="cdt" style="background:var(--amarelo)"></div><div class="ctl">Distribuição por Campus</div>${segPills()}</div>${donut(vs,tot,f)}</div>
+    <div class="cb an"><div class="ch2"><div class="cdt" style="background:var(--verde)"></div><div class="ctl">Valores ${S.view==='anual'?'Anuais':'Mensais'}</div>${segPills()}</div>${bars(vs,f)}</div>
+    <div class="cb f an"><div class="ch2"><div class="cdt" style="background:var(--azul)"></div><div class="ctl">Composição: Postos vs Material</div></div>${hstackPlan(P,m,f)}</div>
+    <div class="cb f an"><div class="ch2"><div class="cdt" style="background:var(--cinza)"></div><div class="ctl">Detalhamento por Posto</div></div>${tbl(P,m,f)}</div>
+  </div>`;
+}
+
+function rE(){
+  if(!S.exec||!S.exec.length)return'<div class="cb" style="text-align:center;padding:40px"><p style="color:var(--cinza)">Nenhum dado de execução disponível.</p></div>';
+  const ms=eMo(),md=eMD(),f=S.sel!==null?[S.sel]:CN.map((_,i)=>i);
+  const et=CN.map((_,i)=>eTot(i)),eg=et.reduce((a,b)=>a+b,0);
+  const mdd={};f.forEach(i=>{mdd[i]=ms.map(m=>{const r=S.exec.find(x=>x.campus.toUpperCase()===CU[i]&&x.mes===m);return r||{mes:m,maoObra:0,material:0,total:0};});});
+  return`<div class="sg an">
+    <div class="cd ct" onclick="sel(null)"><div class="ca" style="background:var(--verde)"></div><div class="lb" style="color:var(--verde)">Total Executado — ${segLabel()}</div><div class="vl" style="color:var(--verde)">${fmt(eg)}</div><div class="sb">${md.length} meses com dados</div></div>
+    ${CN.map((c,i)=>`<div class="cd${S.sel===i?' sel':''}" onclick="sel(${i})"><div class="ca" style="background:${KK[i]}"></div><div class="lb">${c}</div><div class="vl">${fK(et[i])}</div><div class="sb">${pc(et[i],eg)} do executado</div></div>`).join('')}
+  </div><div class="cg">
+    <div class="cb f an"><div class="ch2"><div class="cdt" style="background:var(--verde)"></div><div class="ctl">Evolução Mensal</div>${segPills()}<div class="cst">${md.length} meses</div></div>${tline(mdd,ms,f)}</div>
+    <div class="cb an"><div class="ch2"><div class="cdt" style="background:var(--amarelo)"></div><div class="ctl">Distribuição</div>${segPills()}</div>${donut(et,eg,f)}</div>
+    <div class="cb an"><div class="ch2"><div class="cdt" style="background:var(--azul)"></div><div class="ctl">Total por Campus</div>${segPills()}</div>${bars(et,f)}</div>
+    <div class="cb f an"><div class="ch2"><div class="cdt" style="background:var(--cinza)"></div><div class="ctl">Tabela de Execução</div></div>${eTbl(ms,f)}</div>
+  </div>`;
+}
+
+function rC(){
+  if(!S.plan)return'';const pa=CN.map((_,i)=>planVal(i)),et=CN.map((_,i)=>eTot(i)),f=S.sel!==null?[S.sel]:CN.map((_,i)=>i),nM=eMD().length||1;
+  return`<div class="cg">
+    <div class="cb f an"><div class="ch2"><div class="cdt" style="background:var(--amarelo)"></div><div class="ctl">Planejado vs Executado</div>${segPills()}<div class="cst">${nM} meses</div></div>${compB(pa,et,f,nM)}</div>
+    <div class="cb f an"><div class="ch2"><div class="cdt" style="background:var(--verde)"></div><div class="ctl">Nível de Execução</div>${segPills()}</div><div class="gg">${f.map(i=>{const p=pa[i],e=et[i],ep=p>0?e/p*100:0,xp=nM/12*100;return gauge(CN[i],ep,KK[i],p,e,xp);}).join('')}</div></div>
+  </div>`;
+}
+
+function rS(){
+  if(!S.plan)return'';
+  const f=S.sel!==null?[S.sel]:CN.map((_,i)=>i);
+  const nM=eMD().length;const mRest=12-nM;
+  return`<div class="cg">
+    <div class="cb f an"><div class="ch2"><div class="cdt" style="background:var(--verde)"></div><div class="ctl">Saldo Remanescente por Campus</div><div class="cst">${nM} meses executados · ${mRest} meses restantes</div></div>
+      <div class="saldo-grid">${f.map(i=>{
+        const pA=S.plan.totA[i],pPostA=S.plan.tpM[i]*12,pMatA=S.plan.matM[i]*12;
+        const eTotal=eBy(i).reduce((a,r)=>a+r.total,0),ePost=ePostTot(i),eMat=eMatTot(i);
+        const sTotal=pA-eTotal,sPost=pPostA-ePost,sMat=pMatA-eMat;
+        const pctUsed=pA>0?eTotal/pA*100:0;
+        const avgMes=nM>0?eTotal/nM:0;
+        const mesesDura=avgMes>0?sTotal/avgMes:mRest;
+        const sColor=sTotal>0?'var(--verde)':'var(--vermelho)';
+        return`<div class="saldo-card" style="border-top-color:${KK[i]}">
+          <div class="sc-name" style="color:${KK[i]}">${CN[i]}</div>
+          <div class="sc-row"><span class="sc-label">Planejado anual</span><span class="sc-val">${fmt(pA)}</span></div>
+          <div class="sc-row"><span class="sc-label">  └ Postos</span><span class="sc-val" style="font-size:10px">${fmt(pPostA)}</span></div>
+          <div class="sc-row"><span class="sc-label">  └ Material</span><span class="sc-val" style="font-size:10px">${fmt(pMatA)}</span></div>
+          <div class="sc-divider"></div>
+          <div class="sc-row"><span class="sc-label">Executado (${nM} meses)</span><span class="sc-val">${fmt(eTotal)}</span></div>
+          <div class="sc-row"><span class="sc-label">  └ Postos</span><span class="sc-val" style="font-size:10px">${fmt(ePost)}</span></div>
+          <div class="sc-row"><span class="sc-label">  └ Material</span><span class="sc-val" style="font-size:10px">${fmt(eMat)}</span></div>
+          <div class="sc-divider"></div>
+          <div class="sc-row"><span class="sc-label" style="font-weight:700">Saldo disponível</span><span class="sc-saldo" style="color:${sColor}">${fmt(sTotal)}</span></div>
+          <div class="sc-row"><span class="sc-label">  └ Postos</span><span style="font-weight:700;font-size:10px;color:${sPost>=0?'var(--verde)':'var(--vermelho)'}">${fmt(sPost)}</span></div>
+          <div class="sc-row"><span class="sc-label">  └ Material</span><span style="font-weight:700;font-size:10px;color:${sMat>=0?'var(--verde)':'var(--vermelho)'}">${fmt(sMat)}</span></div>
+          <div class="sc-bar"><div class="sc-bar-fill" style="width:${Math.min(100,pctUsed)}%;background:${pctUsed>100?'var(--vermelho)':pctUsed>75?'var(--amarelo)':KK[i]}"></div></div>
+          <div class="sc-months">${pctUsed.toFixed(1)}% utilizado · Média mensal: ${fK(avgMes)} · Alcance: ~${Math.max(0,mesesDura).toFixed(1)} meses</div>
+        </div>`;
+      }).join('')}</div>
+    </div>
+    <div class="cb f an"><div class="ch2"><div class="cdt" style="background:var(--amarelo)"></div><div class="ctl">Disponibilidade Mensal Estimada</div><div class="cst">Quanto cada campus pode investir por mês nos ${mRest} meses restantes</div></div>
+      <div class="bs" style="height:200px">${f.map((i,x)=>{
+        const saldo=S.plan.totA[i]-eBy(i).reduce((a,r)=>a+r.total,0);
+        const perMonth=mRest>0?Math.max(0,saldo)/mRest:0;
+        const mx=Math.max(...f.map(j=>{const s2=S.plan.totA[j]-eBy(j).reduce((a2,r)=>a2+r.total,0);return mRest>0?Math.max(0,s2)/mRest:0;}));
+        const h=mx>0?perMonth/mx*180:0;
+        return`<div class="bc"><div class="bv">${fK(perMonth)}/mês</div><div class="br" style="height:${h}px;background:${KK[i]}"></div><div class="bn">${CN[i]}</div></div>`;
+      }).join('')}</div>
+    </div>
+  </div>`;
+}
+
+// ============================================================
+// COMPONENTS
+// ============================================================
+function donut(v,t,f){const r=80,cx=100,cy=100,sw=24,ci=2*Math.PI*r;let o=0;const sg=f.map(i=>{const p=t>0?v[i]/t:0,d=ci*p,g=ci-d;const s=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${KK[i]}" stroke-width="${sw}" stroke-dasharray="${d} ${g}" stroke-dashoffset="${-o}" style="cursor:pointer;transition:all .3s" onmouseenter="sT(event,'${CN[i]}\\n${fmt(v[i])} (${pc(v[i],t)})')" onmouseleave="hT()" onclick="sel(${i})"/>`;o+=d;return s;});return`<div class="dw"><div class="dsb"><svg viewBox="0 0 200 200" width="200" height="200"><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#EEF1F5" stroke-width="${sw}"/>${sg.join('')}</svg><div class="dc"><div class="da">${fK(t)}</div><div class="dl">${segLabel()}</div></div></div><div class="lg">${f.map(i=>`<div class="li" onclick="sel(${i})"><div class="ld2" style="background:${KK[i]}"></div><div class="ln">${CN[i]}</div><div class="lv">${fK(v[i])}<span class="lp">(${pc(v[i],t)})</span></div></div>`).join('')}</div></div>`;}
+
+function bars(v,f){const mx=Math.max(...f.map(i=>v[i]));const sc=segColor();return`<div class="bs">${f.map(i=>{const h=mx>0?v[i]/mx*220:0;return`<div class="bc" onclick="sel(${i})"><div class="bv">${fK(v[i])}</div><div class="br" style="height:${h}px;background:${KK[i]}"></div><div class="bn">${CN[i]}</div></div>`;}).join('')}</div>`;}
+
+function hstackPlan(P,m,f){const mx=Math.max(...f.map(i=>P.totM[i]*m));return`<div class="hsc">${f.map(i=>{const po=P.tpM[i]*m,ma=P.matM[i]*m,to=P.totM[i]*m,pp=to>0?po/to*100:0,pm=to>0?ma/to*100:0,w=mx>0?to/mx*100:0;return`<div class="hsr"><div class="hsl">${CN[i]}</div><div class="hst2" style="max-width:${w}%"><div class="hsg" style="width:${pp}%;background:${KK[i]}" onmouseenter="sT(event,'${CN[i]} — Postos\\n${fmt(po)}')" onmouseleave="hT()">${pp>18?fK(po):''}</div><div class="hsg" style="width:${pm}%;background:${KK[i]}77" onmouseenter="sT(event,'${CN[i]} — Material\\n${fmt(ma)}')" onmouseleave="hT()">${pm>18?fK(ma):''}</div></div><div class="htt">${fmt(to)}</div></div>`;}).join('')}<div style="display:flex;gap:16px;margin-top:6px;padding-left:110px"><span style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--cinza)"><i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--azul)"></i> Postos (66,7%)</span><span style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--cinza)"><i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--azul);opacity:.45"></i> Material (33,3%)</span></div></div>`;}
+
+function tline(md,ms,f){const mx=Math.max(...f.flatMap(i=>md[i].map(d=>eVal(d))));return`<div><div class="tlm">${ms.map(m=>`<span>${fmtMes(m)}</span>`).join('')}</div>${f.map(i=>`<div class="tlr"><div class="tll" style="color:${KK[i]}">${CN[i]}</div><div class="tlbw">${md[i].map(d=>{const v=eVal(d),h=mx>0?v/mx*50:0;return`<div class="tlb" style="height:${h}px;background:${KK[i]}" onmouseenter="sT(event,'${CN[i]} · ${fmtMes(d.mes)}\\n${segLabel()}: ${fmt(v)}')" onmouseleave="hT()"><div class="tlbt">${v>0?fK(v):''}</div></div>`;}).join('')}</div></div>`).join('')}</div>`;}
+
+function gauge(nm,p,c,pl,ex,xp){const r=38,ci=2*Math.PI*r,d=ci*(Math.min(p,100)/100),g=ci-d;const sc=p>xp*1.15?'var(--vermelho)':p<xp*0.85?'var(--amarelo)':'var(--verde)';return`<div class="gc"><div class="gn">${nm}</div><div class="grb"><svg viewBox="0 0 100 100" width="100" height="100"><circle cx="50" cy="50" r="${r}" fill="none" stroke="#EEF1F5" stroke-width="8" transform="rotate(-90 50 50)"/><circle cx="50" cy="50" r="${r}" fill="none" stroke="${c}" stroke-width="8" stroke-dasharray="${d} ${g}" stroke-linecap="round" transform="rotate(-90 50 50)"/></svg><div class="gcn" style="color:${sc}">${p.toFixed(1)}%</div></div><div class="gd">Plan: <strong>${fK(pl)}</strong><br>Exec: <strong>${fK(ex)}</strong><br>Esperado: ~${xp.toFixed(0)}%</div></div>`;}
+
+function compB(pl,ex,f,nM){const mx=Math.max(...f.flatMap(i=>[pl[i],ex[i]]));return`<div style="display:flex;flex-direction:column;gap:14px">${f.map(i=>{const pW=mx>0?pl[i]/mx*100:0,eW=mx>0?ex[i]/mx*100:0,df=ex[i]-pl[i]*(nM/12),dc=df>0?'var(--vermelho)':'var(--verde)';return`<div style="display:flex;align-items:center;gap:10px"><div style="width:100px;font-size:10px;font-weight:700;color:var(--cinza);text-align:right;text-transform:uppercase">${CN[i]}</div><div style="flex:1;display:flex;flex-direction:column;gap:3px"><div style="display:flex;align-items:center;gap:6px"><div style="height:14px;border-radius:3px;background:${KK[i]};width:${pW}%"></div><span style="font-size:9px;color:var(--cinza);white-space:nowrap">Plan: ${fK(pl[i])}</span></div><div style="display:flex;align-items:center;gap:6px"><div style="height:14px;border-radius:3px;background:${KK[i]}88;width:${eW}%"></div><span style="font-size:9px;color:var(--cinza);white-space:nowrap">Exec: ${fK(ex[i])}</span></div></div><div style="width:90px;text-align:right;font-size:10px;font-weight:700;color:${dc}">${df>=0?'+':''}${fK(Math.abs(df))}<br><span style="font-size:9px;color:var(--cinzaL)">vs proporcional</span></div></div>`;}).join('')}<div style="display:flex;gap:16px;margin-top:8px;padding-left:110px"><span style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--cinza)"><i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--azul)"></i> Planejado anual</span><span style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--cinza)"><i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--azul);opacity:.5"></i> Executado</span></div></div>`;}
+
+function tbl(P,m,f){return`<div class="tw"><table class="dt"><thead><tr><th rowspan="2">Posto</th><th rowspan="2">Valor Unit.</th>${f.map(i=>`<th class="thc" colspan="2">${CN[i]}</th>`).join('')}</tr><tr>${f.map(()=>`<th style="background:#005A99">Qtd</th><th style="background:#005A99">Valor</th>`).join('')}</tr></thead><tbody>${P.postos.map(p=>`<tr><td>${p.nome}</td><td style="text-align:right;font-weight:700">${fmt(p.valor)}</td>${f.map(i=>{const q=p.qtd[i],v=q*p.valor*m;return`<td class="q">${q||'<span class="z">—</span>'}</td><td class="v">${v>0?fmt(v):'<span class="z">—</span>'}</td>`;}).join('')}</tr>`).join('')}<tr class="trt"><td>Total Postos</td><td></td>${f.map(i=>`<td></td><td class="v">${fmt(P.tpM[i]*m)}</td>`).join('')}</tr><tr class="trm"><td>Material (50%)</td><td></td>${f.map(i=>`<td></td><td class="v">${fmt(P.matM[i]*m)}</td>`).join('')}</tr><tr class="trt"><td>TOTAL</td><td></td>${f.map(i=>`<td></td><td class="v">${fmt(P.totM[i]*m)}</td>`).join('')}</tr></tbody></table></div>`;}
+
+function eTbl(ms,f){if(!S.exec)return'';return`<div class="tw"><table class="dt"><thead><tr><th>Mês</th>${f.map(i=>`<th class="thc" colspan="3">${CN[i]}</th>`).join('')}</tr><tr><th></th>${f.map(()=>`<th style="background:#005A99">M.Obra</th><th style="background:#005A99">Material</th><th style="background:#005A99">Total</th>`).join('')}</tr></thead><tbody>${ms.map(m=>`<tr><td style="font-weight:700">${fmtMes(m)}</td>${f.map(i=>{const r=S.exec.find(x=>x.campus.toUpperCase()===CU[i]&&x.mes===m);if(!r||r.total===0)return`<td class="z">—</td><td class="z">—</td><td class="z">—</td>`;return`<td class="v">${fmt(r.maoObra)}</td><td class="v">${fmt(r.material)}</td><td class="v" style="font-weight:700">${fmt(r.total)}</td>`;}).join('')}</tr>`).join('')}<tr class="trt"><td>TOTAL</td>${f.map(i=>{const rw=eBy(i),mo=rw.reduce((a,r)=>a+r.maoObra,0),ma=rw.reduce((a,r)=>a+r.material,0),to=rw.reduce((a,r)=>a+r.total,0);return`<td class="v">${fmt(mo)}</td><td class="v">${fmt(ma)}</td><td class="v">${fmt(to)}</td>`;}).join('')}</tr></tbody></table></div>`;}
+
+load();
+</script>
+</body>
+</html>
 
